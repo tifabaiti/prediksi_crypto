@@ -94,8 +94,16 @@ elif menu == 'Ethereum':
 
 st.sidebar.header('Input Data')
 input_data = {}
-for column in selected_df.columns[1:]:
+columns_to_input = ['Terakhir', 'Pembukaan', 'Tertinggi', 'Terendah', 'Vol.']
+
+for column in columns_to_input:
     input_data[column] = st.sidebar.number_input(column, value=float(selected_df[column].mean()))
+
+# Pastikan bahwa input_data memiliki semua kolom yang dibutuhkan, meskipun ada yang kosong
+for column in columns_to_input:
+    if column not in input_data:
+        input_data[column] = 0.0  # Misalnya, jika tidak diisi, maka diisi dengan nilai default atau 0.0
+
 
 # Melakukan pembagian data menjadi data pelatihan dan pengujian
 if menu == 'Bitcoin':
