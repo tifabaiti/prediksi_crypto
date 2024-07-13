@@ -75,8 +75,8 @@ def predict_price(model, scaler, input_data, columns):
 
 # Membaca dataset untuk Bitcoin, Dogecoin, dan Ethereum
 bitcoin_df = load_and_process_data('bitcoin.csv', ['Terakhir', 'Pembukaan', 'Tertinggi', 'Terendah', 'Vol.', 'Perubahan%'])
-dogecoin_df = load_and_process_data('dogecoin_10_parameter.csv', ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
-ethereum_df = load_and_process_data('ethereum_10_parameter.csv', ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
+dogecoin_df = load_and_process_data('dogecoin_10_parameter.csv', ['Tanggal','Terakhir','SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
+ethereum_df = load_and_process_data('ethereum_10_parameter.csv', ['Tanggal','Terakhir','SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
 
 # Membuat aplikasi Streamlit
 st.title('Prediksi Harga Cryptocurrency')
