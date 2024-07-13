@@ -73,7 +73,7 @@ def predict_price(model, scaler, input_data, columns):
 # Membaca dataset untuk Bitcoin, Dogecoin, dan Ethereum
 bitcoin_df = load_and_process_data('bitcoin.csv')
 dogecoin_df = load_and_process_data('dogecoin_10_parameter.csv')
-ethereum_df = load_and_process_data('ethereum_10_patrameter.csv')
+ethereum_df = load_and_process_data('ethereum_10_parameter.csv')
 
 # Membuat aplikasi Streamlit
 st.title('Prediksi Harga Cryptocurrency')
