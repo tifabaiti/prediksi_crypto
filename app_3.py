@@ -98,7 +98,12 @@ for column in selected_df.columns[1:]:
     input_data[column] = st.sidebar.number_input(column, value=float(selected_df[column].mean()))
 
 # Melakukan pembagian data menjadi data pelatihan dan pengujian
-X = selected_df.drop(columns=['Tanggal', 'Terakhir'])
+if menu == 'Bitcoin':
+    X = selected_df.drop(columns=['Tanggal', 'Terakhir'])
+elif menu == 'Dogecoin' or menu == 'Ethereum':
+    X = selected_df[['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10',
+                    'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10']]
+
 y = selected_df['Terakhir']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
