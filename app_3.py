@@ -112,6 +112,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 if st.sidebar.button('Mulai Prediksi', key='predict_button'):
     model, scaler = train_svr_model(X_train, y_train)
     prediksi_harga = predict_price(model, scaler, input_data, X.columns)
+    
+    # Menentukan apakah harga naik atau turun
+    last_price = selected_df['Terakhir'].iloc[-1]
+    if prediksi_harga > last_price:
+        trend = "naik"
+    else:
+        trend = "turun"
 
     # Menampilkan hasil prediksi
     st.write('### Data Input Pengguna')
@@ -120,6 +127,7 @@ if st.sidebar.button('Mulai Prediksi', key='predict_button'):
 
     st.write('### Prediksi Harga Berikutnya')
     st.write(prediksi_harga)
+    st.write(f'Harga prediksi pada hari berikutnya akan {trend}.')
 
 # Mengatur tata letak warna tombol
 st.markdown(
