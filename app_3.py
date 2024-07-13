@@ -19,36 +19,32 @@ def convert_to_numeric(value):
     except ValueError:
         return np.nan
 
-# Fungsi untuk memuat dan memproses dataset
-def load_and_process_data(file_path, selected_features=None):
-    df = pd.read_csv(file_path)
-
-    # Memilih fitur yang sesuai jika dipilih
-    if selected_features:
-        df = df[selected_features]
-
+# Fungsi untuk memuat dan memproses dataset Bitcoin
+def load_and_process_bitcoin_data(file_path):
+    df = pd.read_csv(file_path, usecols=['Tanggal', 'Terakhir', 'Pembukaan', 'Tertinggi', 'Terendah', 'Vol.', 'Perubahan%'])
+    
     # Mengatasi nilai non-numerik
-    for column in df.columns:
-        df[column] = df[column].apply(convert_to_numeric)
+    df['Perubahan%'] = df['Perubahan%'].str.replace('%', '').astype(float)
+    
+    # Mengatasi tanggal
+    df['Tanggal'] = pd.to_datetime(df['Tanggal'])
+    
+    return df
 
-    # Memastikan semua kolom numerik memiliki tipe float
-    for column in df.columns:
-        df[column] = pd.to_numeric(df[column], errors='coerce')
+# Fungsi untuk memuat dan memproses dataset Dogecoin
+def load_and_process_dogecoin_data(file_path):
+    df = pd.read_csv(file_path, usecols=['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
+    
+    # Mengatasi nilai non-numerik jika diperlukan
+    
+    return df
 
-    # Imputasi nilai hilang dengan mean
-    imputer = SimpleImputer(strategy='mean')
-    df = imputer.fit_transform(df)
-
-    # Membuat DataFrame kembali setelah imputasi
-    df = pd.DataFrame(df, columns=df.columns)
-
-    # Mengatasi Outliers (opsional)
-    # numeric_df = df.select_dtypes(include=[np.number])
-    # Q1 = numeric_df.quantile(0.25)
-    # Q3 = numeric_df.quantile(0.75)
-    # IQR = Q3 - Q1
-    # df = df[~((numeric_df < (Q1 - 1.5 * IQR)) | (numeric_df > (Q3 + 1.5 * IQR))).any(axis=1)]
-
+# Fungsi untuk memuat dan memproses dataset Ethereum
+def load_and_process_ethereum_data(file_path):
+    df = pd.read_csv(file_path, usecols=['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
+    
+    # Mengatasi nilai non-numerik jika diperlukan
+    
     return df
 
 # Fungsi untuk melatih model SVR
@@ -68,10 +64,14 @@ def predict_price(model, scaler, input_data, columns):
     prediksi = model.predict(input_scaled)
     return prediksi[0]
 
-# Membaca dataset untuk Bitcoin, Dogecoin, dan Ethereum
-bitcoin_df = load_and_process_data('bitcoin.csv', ['Terakhir', 'Pembukaan', 'Tertinggi', 'Terendah', 'Vol.', 'Perubahan%'])
-dogecoin_df = load_and_process_data('dogecoin_10_parameter.csv', ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
-ethereum_df = load_and_process_data('ethereum_10_parameter.csv', ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10'])
+# Memuat dan memproses dataset Bitcoin
+bitcoin_df = load_and_process_bitcoin_data('bitcoin.csv')
+
+# Memuat dan memproses dataset Dogecoin
+dogecoin_df = load_and_process_dogecoin_data('dogecoin_10_parameter.csv')
+
+# Memuat dan memproses dataset Ethereum
+ethereum_df = load_and_process_ethereum_data('ethereum_10_parameter.csv')
 
 # Membuat aplikasi Streamlit
 st.title('Prediksi Harga Cryptocurrency')
@@ -79,25 +79,26 @@ st.title('Prediksi Harga Cryptocurrency')
 # Menu navigasi untuk memilih cryptocurrency
 menu = st.sidebar.selectbox('Pilih Cryptocurrency', ('Bitcoin', 'Dogecoin', 'Ethereum'))
 
-# Menampilkan form input untuk prediksi
+# Menampilkan form input untuk prediksi berdasarkan cryptocurrency yang dipilih
+st.sidebar.header('Input Data')
+input_data = {}
+
 if menu == 'Bitcoin':
     st.header('Prediksi Harga Bitcoin')
     selected_df = bitcoin_df
+    input_data = {col: st.sidebar.number_input(col, value=selected_df[col].mean()) for col in ['Pembukaan', 'Tertinggi', 'Terendah', 'Vol.', 'Perubahan%']}
 elif menu == 'Dogecoin':
     st.header('Prediksi Harga Dogecoin')
     selected_df = dogecoin_df
+    input_data = {col: st.sidebar.number_input(col, value=selected_df[col].mean()) for col in ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10']}
 elif menu == 'Ethereum':
     st.header('Prediksi Harga Ethereum')
     selected_df = ethereum_df
-
-st.sidebar.header('Input Data')
-input_data = {}
-for column in selected_df.columns:
-    input_data[column] = st.sidebar.number_input(column, value=float(selected_df[column].mean()))
+    input_data = {col: st.sidebar.number_input(col, value=selected_df[col].mean()) for col in ['SMA_10', 'WMA_10', 'Momentum_10', 'Stoch_K%_10', 'Stoch_D%_10', 'RSI_10', 'MACD', 'Williams_R%_10', 'AD_Oscillator', 'CCI_10']}
 
 # Melakukan pembagian data menjadi data pelatihan dan pengujian
-X = selected_df.drop(columns=['Terakhir'])
-y = selected_df['Terakhir']
+X = selected_df.drop(columns=['Terakhir'])  # Adjust this according to your target column
+y = selected_df['Terakhir']  # Adjust this according to your target column
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
