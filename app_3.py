@@ -22,13 +22,13 @@ def convert_to_numeric(value):
 # Fungsi untuk memuat dan memproses dataset Bitcoin
 def load_and_process_bitcoin_data(file_path):
     df = pd.read_csv(file_path, usecols=['Tanggal', 'Terakhir', 'Pembukaan', 'Tertinggi', 'Terendah', 'Vol.', 'Perubahan%'])
-    
-    # Mengatasi nilai non-numerik
-    df['Perubahan%'] = df['Perubahan%'].str.replace('%', '').astype(float)
-    
-    # Mengatasi tanggal
+
+    # Mengatasi nilai non-numerik pada kolom 'Perubahan%'
+    df['Perubahan%'] = df['Perubahan%'].apply(lambda x: float(str(x).replace('%', '')) if isinstance(x, str) else x)
+
+    # Mengatasi tanggal jika perlu
     df['Tanggal'] = pd.to_datetime(df['Tanggal'])
-    
+
     return df
 
 # Fungsi untuk memuat dan memproses dataset Dogecoin
